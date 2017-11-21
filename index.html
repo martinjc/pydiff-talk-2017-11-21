@@ -1,0 +1,172 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>reveal.js</title>
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/black.css">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section>
+					<h1>The PyDiff Conspiracy</h1>
+					<h3>Volume 3</h3>
+				</section>
+				<section data-background-image="media/conspiracy.png" data-background-size="contain">
+				</section>
+				<section data-background-image="media/conspiracy2.png" data-background-size="contain">
+				</section>
+				<section data-background-image="media/email1.png" data-background-size="contain">
+				</section>
+				<section data-background-image="media/email2.png" data-background-size="contain">
+				</section>
+				<section data-background-image="media/email3.png" data-background-size="contain">
+				</section>
+				<section data-background-image="media/email4.png" data-background-size="contain">
+				</section>
+				<section data-background-image="media/email5.png" data-background-size="contain">
+				</section>
+				<section data-background-image="media/email6.png" data-background-size="contain">
+				</section>
+				<section data-markdown>
+				```python
+				import smtplib
+				import email
+				```
+				</section>
+
+				<section data-markdown>
+				```python
+				from _credentials import uname, pwd
+
+				# Address to send emails from
+				SEND_FROM = "chorleymj@cardiff.ac.uk"
+
+				# details for the email server
+				SMTP_SERVER = "outlook.office365.com"
+				SMTP_PORT = 587
+				SMTP_USERNAME = uname
+				SMTP_PASSWORD = pwd
+				```
+				</section>
+
+				<section data-markdown>
+				```python
+				from email.mime.application import MIMEApplication
+				from email.mime.multipart import MIMEMultipart
+				from email.mime.text import MIMEText
+				from email.utils import COMMASPACE, formatdate
+				import smtplib
+				```
+				</section>
+
+				<section data-markdown>
+				```python
+				class Mailer:
+				    """mailer"""
+
+				    def __init__(self, uname, pwd, server, port):
+				        self.uname = uname
+				        self.pwd = pwd
+				        self.server = server
+				        self.port = port
+
+				```
+				</section>
+
+				<section data-markdown>
+				```python
+
+					def build_msg(self, send_from, send_to, subject, body=None):
+						self.msg = MIMEMultipart('alternative')
+						self.msg['From'] = send_from
+						self.msg['To'] = COMMASPACE.join(send_to)
+						self.msg['Date'] = formatdate(localtime=True)
+						self.msg['Subject'] = subject
+						self.msg.attach(MIMEText(body, 'plain'))
+				```
+				</section>
+
+				<section data-markdown>
+				```python
+					def send(self, send_from, send_to, subject, body=None):
+
+				        self.build_msg(send_from, send_to, subject, body)
+
+				        """authenticate with SMTP server and send email"""
+				        self.sender = smtplib.SMTP(self.server, self.port)
+				        self.sender.ehlo()
+				        self.sender.starttls()
+				        self.sender.login(self.uname, self.pwd)
+				        self.sender.sendmail(SEND_FROM, send_to, self.msg.as_string())
+				        self.sender.quit()
+				```
+				</section>
+
+				<section data-markdown>
+				```python
+				from config import *
+				from mailer import Mailer
+
+				message = "YOU'RE STRETCHING THIS CONSPIRACY THING REALLY FAR NOW!"
+				subject = '**REALLY URGENT PLEASE READ*** THE CONSPIRACY IS VERY REAL!!!!11 STOP TALKING'
+
+				mailer = Mailer(SMTP_USERNAME, SMTP_PASSWORD, SMTP_SERVER, SMTP_PORT)
+
+				mailer.send(SEND_FROM, ['martin.chorley@gmail.com'], subject, message)
+				```
+				</section>
+
+				<section>
+					<h1>The PyDiff Conspiracy</h1>
+					<h3>TRUST NO-ONE</h3>
+				</section>
+
+			</div>
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+			Reveal.initialize({
+				width: "80%",
+				height: "100%",
+
+				controls: false,
+				progress: true,
+				slideNumber: true,
+				history: true,
+				center: true,
+
+				margin: 0,
+				minScale: 1,
+				maxScale: 1,
+
+				transition: 'none', // none/fade/slide/convex/concave/zoom
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js' },
+					{ src: 'plugin/markdown/markdown.js' },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+				]
+			});
+		</script>
+	</body>
+</html>
